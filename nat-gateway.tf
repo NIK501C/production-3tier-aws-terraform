@@ -1,0 +1,35 @@
+resource "aws_eip" "nat_az1" {
+  domain = "vpc"
+
+  tags = {
+    Name = "production-3tier-nat-eip-az1"
+  }
+}
+
+resource "aws_eip" "nat_az2" {
+  domain = "vpc"
+
+  tags = {
+    Name = "production-3tier-nat-eip-az2"
+  }
+}
+
+resource "aws_nat_gateway" "nat_az1" {
+  allocation_id = aws_eip.nat_az1.id
+  subnet_id     = aws_subnet.subnets["public_az1"].id
+
+  tags = {
+    Name = "production-3tier-nat-az1"
+  }
+}
+
+resource "aws_nat_gateway" "nat_az2" {
+  allocation_id = aws_eip.nat_az2.id
+  subnet_id     = aws_subnet.subnets["public_az2"].id
+
+  tags = {
+    Name = "production-3tier-nat-az2"
+  }
+
+  depends_on = [aws_internet_gateway.igw]
+}
